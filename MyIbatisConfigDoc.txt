@@ -1,0 +1,93 @@
+ Configure MyIbatis client as a cpcrest child:
+
+ 1- Clone one of existing cpcrest children pom.xml file 
+ 2- Change artifact ID and set it to be 
+ 	<artifactId>myibatis_test</artifactId>
+ 3- Add applicationContext.xml file to classpath (src/main/resources/applicationContext.xml)
+ 4- Enable java based configuration by adding the tag context:annotation-config :
+ 	<context:annotation-config />
+	<bean name="applicationContextConfig" class="<Path_to_class>.ApplicationContextConfig">
+	</bean>
+
+ 5- Create an annotated @Configuration file (<Path_to_class>.ApplicationContextConfig)
+
+ 6- Add myIbatis dependancies:
+ 
+ 	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.5.10</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>2.0.7</version>
+		</dependency>
+
+ 7- Add proper beans to (<Path_to_class>.ApplicationContextConfig) file to configure MyIbatis session:
+
+
+    @Value("${cpc.jdbc.driver}")
+    private String driverName;
+
+    @Value("${cpc.jdbc.url}")
+    private String url;
+
+    @Value("${cpc.jdbc.user}")
+    private String username;
+
+    @Value("${cpc.jdbc.password}")
+    private String password;
+
+    @Bean
+    public DataSource dataSource() {
+        log.info("======================================= INIT DATA ===========================================================");
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driverName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
+
+
+    @Bean
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
+        log.info("======================================= INIT Ibatis DATA ===========================================================");
+        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+        factoryBean.setDataSource(dataSource());
+        return factoryBean.getObject();
+    }
+
+
+ 8- Add the annotation @MapperScan("<PACKAGE_WHERE_MAPPERS_EXISTS>") on the (ApplicationContextConfig) class
+ 9- Add Mapper class with one select query:
+
+        @Mapper
+        public interface TestMapper {
+
+
+            @Select("select count(*) from change_proposal_alias")
+            <return type> getTestMapper();
+
+
+        }
+
+
+ 10- Copy the new dependancies jars mybatis-3.5.10.jar and mybatis-spring-2.0.7.jar to tomcat lib   
+
+ 11- Build and Deploy the jar
+
+
+---------------------------------------------
+
+We added a temp endpoint for testing the rest api 
+
+GET 10.201.7.41/activiti-app/proposals/getChangeProposalAliasCount
+
+This endpoint returns the result for TestMapper.getTestMapper()
+
+-------------------------------------------------
