@@ -1,1 +1,10 @@
-test file
+proposalService.getProposalSummaryByExternalId	
+select	
+get display name from change proposal alias by external id	
+SELECT cpa.change_proposal_alias_cd 
+FROM change_proposal_alias cpa INNER JOIN change_proposal cp ON cpa.fk_change_proposal_id = cp.change_proposal_id 
+WHERE cp.guid_id=:guid_id 
+AND cpa.source_system_ct IN ('CE','CPC','CEF')
+SORT BY cpa.last_mod_ts
+LIMIT 1
+------------------------------------------------------------
