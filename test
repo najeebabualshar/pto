@@ -8,3 +8,16 @@ AND cpa.source_system_ct IN ('CE','CPC','CEF')
 SORT BY cpa.last_mod_ts
 LIMIT 1
 ------------------------------------------------------------
+
+
+wmsCommonService.getTaskConfigDueDays
+select
+get task Due Days from Standard Workflow Task Config table by task id and phase id
+select task_days_no from stnd_wf_task_config tc where tc.fk_proposal_phase_cd=:phaseId and tc.task_id =:taskId			
+============================================================================================
+
+select * from stnd_wf_user_group tc where tc.fk_task_id =:taskId
+			
+			"SELECT DISTINCT fk_ipo_cd  
+FROM stnd_wf_user_group tc 
+WHERE tc.fk_task_id =:taskId"
